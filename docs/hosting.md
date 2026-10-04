@@ -57,6 +57,16 @@ npx vercel --prod --yes --token "$VERCEL_TOKEN"
 - トークン: **Create Deployments**（プロジェクト作成まで行うならそれも含む）
 - 対象チーム／個人アカウントへのデプロイ権限
 
+## クロール用静的ファイル
+
+`public/` からビルド成果物へコピーされる。
+
+| パス | 内容 |
+| --- | --- |
+| `/robots.txt` | `Allow: /`（GPTBot / OAI-SearchBot / PerplexityBot / Googlebot / Google-Extended / Bingbot 等を明示許可）。`Sitemap:` 行あり |
+| `/sitemap.xml` | 本番URL `https://marriott-bonvoy-lp.vercel.app/` のみ |
+| HTML | `canonical` / `og:url` は本番URL。`meta robots` は `index, follow`（noindex なし） |
+
 ## 公開前チェック
 
 - [ ] `src/config.js` の `LINE_FRIEND_URL` / `GAS_WEBAPP_URL` が本番値  
@@ -64,6 +74,8 @@ npx vercel --prod --yes --token "$VERCEL_TOKEN"
 - [ ] メールフォームが本番 GAS に届く  
 - [ ] LINE CTA が友だち追加 URL を開く  
 - [ ] `https://….vercel.app` がスマホで表示される  
+- [ ] `/robots.txt` と `/sitemap.xml` が 200 で、AIボットを Disallow していない  
+
 
 ## 本番デプロイ状況（2026-10-04）
 
