@@ -165,3 +165,57 @@ body {
     animation: none !important;
   }
 }
+
+
+.ref-note {
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--stone);
+}
+
+.ref-note a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.ref-note a:hover {
+  color: var(--ivory);
+}
+
+.answer-box {
+  border-left: 2px solid rgba(201, 169, 98, 0.55);
+  padding: 0.65rem 0 0.65rem 0.95rem;
+  color: rgba(247, 244, 239, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.fact-list {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+}
+
+.fact-list > div {
+  border-top: 1px solid rgba(201, 169, 98, 0.22);
+  padding-top: 0.9rem;
+}
+
+.fact-list dt {
+  margin: 0;
+  color: var(--gold-light);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.fact-list dd {
+  margin: 0.35rem 0 0;
+  color: rgba(247, 244, 239, 0.88);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.compare-caption {
+  caption-side: top;
+}
