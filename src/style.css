@@ -25,6 +25,45 @@ body {
     radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 169, 98, 0.12), transparent 55%),
     var(--bg);
   color: var(--ivory);
+  /* 日本語: っ/ゃ などの前で不自然に割らない */
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.nobr {
+  white-space: nowrap;
+}
+
+.hero-title {
+  line-break: strict;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.hero-lead {
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.hero-lead__break {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .hero-lead__break {
+    display: inline;
+  }
+}
+
+/* 大きめ見出しも助詞途中割れを抑える */
+h1,
+h2,
+h3 {
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 ::selection {

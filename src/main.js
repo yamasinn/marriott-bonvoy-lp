@@ -9,9 +9,27 @@ const QUIZ_COPY = {
     '先に一般寄りで試算してみるのが無難。250万円の見通しが立ってから、プレミアムを考え直せばOKです。',
 }
 
+function isPlaceholder(value) {
+  return !value || String(value).includes('PLACEHOLDER')
+}
+
 function initLineCta() {
   const link = document.getElementById('line-cta')
   if (!link) return
+
+  if (isPlaceholder(CONFIG.LINE_FRIEND_URL)) {
+    link.removeAttribute('href')
+    link.removeAttribute('target')
+    link.setAttribute('aria-disabled', 'true')
+    link.classList.add('pointer-events-none', 'opacity-50')
+    link.textContent = 'LINE受付は準備中'
+    const note = document.createElement('p')
+    note.className = 'mt-3 text-sm text-stone'
+    note.textContent = '準備中です。メールでも受け付け開始までお待ちください。'
+    link.insertAdjacentElement('afterend', note)
+    return
+  }
+
   link.href = CONFIG.LINE_FRIEND_URL
 }
 
@@ -44,7 +62,7 @@ function setFormStatus(el, message, state) {
  */
 async function postToGas(payload) {
   const url = CONFIG.GAS_WEBAPP_URL
-  if (!url || url.includes('PLACEHOLDER')) {
+  if (isPlaceholder(url)) {
     const err = new Error('GAS_WEBAPP_URL が未設定です')
     err.code = 'CONFIG'
     throw err
@@ -80,6 +98,10 @@ function initEmailForm() {
   const submit = document.getElementById('email-submit')
   const status = document.getElementById('form-status')
   if (!form || !emailInput || !submit || !status) return
+
+  if (isPlaceholder(CONFIG.GAS_WEBAPP_URL)) {
+    setFormStatus(status, 'メール受付は準備中です。設定が終わり次第ご利用いただけます。', 'loading')
+  }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault()
