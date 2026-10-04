@@ -23,13 +23,19 @@ npm run preview
 1. このリポジトリを GitHub 等に用意する  
 2. [Vercel](https://vercel.com/) で Import（`vercel.json` により Build=`npm run build` / Output=`dist`）  
 3. Deploy → `https://<project>.vercel.app`  
-4. 事前に `src/config.js` の `LINE_FRIEND_URL` / `GAS_WEBAPP_URL` を本番値へ  
+4. カード到着後に `src/config.js` の `LINE_FRIEND_URL` / `GAS_WEBAPP_URL` を本番値へ（未設定時は CTA が「準備中」）  
 
 CLI:
 
 ```bash
 npx vercel --prod
 ```
+
+### いまの一時公開（エージェント環境）
+
+- 一時URL: https://temporary-brisk-quasar-8hm5j25.vercel.app  
+- Claim（名義付きに残す）: https://vercel.com/claim-deployment?code=531c54f3-fe87-477f-bdf7-6eeb407df045  
+- エージェント側に `VERCEL_TOKEN` が無いため、恒久 `*.vercel.app` 名義付き本番は Claim / Import / 手元 `vercel login` が必要  
 
 詳細: [docs/hosting.md](./docs/hosting.md)
 

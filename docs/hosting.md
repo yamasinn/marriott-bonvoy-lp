@@ -65,7 +65,19 @@ npx vercel --prod --yes --token "$VERCEL_TOKEN"
 - [ ] LINE CTA が友だち追加 URL を開く  
 - [ ] `https://….vercel.app` がスマホで表示される  
 
-## このクラウド環境での実デプロイ状況
+## このクラウド環境での実デプロイ状況（2026-10-04）
 
-- `VERCEL_TOKEN` が無いため、ここからは本番 URL を発行できない  
-- `vercel.json` と手順は完備済み。手元または CI で `vercel --prod` / ダッシュボード Import すれば公開できる  
+| 項目 | 状態 |
+| --- | --- |
+| 改行修正・CTA準備中表示 | デプロイ済み |
+| 名義付き `vercel --prod` | **未達**（`VERCEL_TOKEN` / login 無し） |
+| 一時公開URL（約60分） | https://temporary-brisk-quasar-8hm5j25.vercel.app |
+| Claim（恒久化） | https://vercel.com/claim-deployment?code=531c54f3-fe87-477f-bdf7-6eeb407df045 |
+
+### 最短で固定本番にする
+
+1. **Claim**: 上の Claim URL を kurokan と同じ Vercel アカウントで開く → プロジェクト名を付けて保持  
+2. **Import**: コードを GitHub 等へ置き、Vercel → Add Project → Import（継続デプロイ向き）  
+3. **CLI**: 手元で `npx vercel login` 後 `npx vercel --prod --yes`、または CI に `VERCEL_TOKEN` を入れる  
+
+詳細の要約はストア側 `docs/hosting-status.md` も参照。
