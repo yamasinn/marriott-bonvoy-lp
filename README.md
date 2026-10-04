@@ -31,11 +31,11 @@ CLI:
 npx vercel --prod
 ```
 
-### いまの一時公開（エージェント環境）
+### 本番（Claim済み・恒久）
 
-- 一時URL: https://temporary-brisk-quasar-8hm5j25.vercel.app  
-- Claim（名義付きに残す）: https://vercel.com/claim-deployment?code=531c54f3-fe87-477f-bdf7-6eeb407df045  
-- エージェント側に `VERCEL_TOKEN` が無いため、恒久 `*.vercel.app` 名義付き本番は Claim / Import / 手元 `vercel login` が必要  
+- URL: https://temporary-brisk-quasar-8hm5j25.vercel.app  
+- Project: `temporary-brisk-quasar-8hm5j25` ／ Team: yamasinn0224-2421's projects  
+- 任意: Vercel Project Settings で `marriott-bonvoy-lp` 等へリネーム  
 
 詳細: [docs/hosting.md](./docs/hosting.md)
 

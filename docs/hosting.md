@@ -65,19 +65,16 @@ npx vercel --prod --yes --token "$VERCEL_TOKEN"
 - [ ] LINE CTA が友だち追加 URL を開く  
 - [ ] `https://….vercel.app` がスマホで表示される  
 
-## このクラウド環境での実デプロイ状況（2026-10-04）
+## 本番デプロイ状況（Claim済み・2026-10-04）
 
 | 項目 | 状態 |
 | --- | --- |
+| 本番URL（恒久） | https://temporary-brisk-quasar-8hm5j25.vercel.app |
+| Project | `temporary-brisk-quasar-8hm5j25` |
+| Team | yamasinn0224-2421's projects |
 | 改行修正・CTA準備中表示 | デプロイ済み |
-| 名義付き `vercel --prod` | **未達**（`VERCEL_TOKEN` / login 無し） |
-| 一時公開URL（約60分） | https://temporary-brisk-quasar-8hm5j25.vercel.app |
-| Claim（恒久化） | https://vercel.com/claim-deployment?code=531c54f3-fe87-477f-bdf7-6eeb407df045 |
+| Claim | **完了** |
 
-### 最短で固定本番にする
+任意: Project Settings でプロジェクト名を `marriott-bonvoy-lp` 等へリネーム。
 
-1. **Claim**: 上の Claim URL を kurokan と同じ Vercel アカウントで開く → プロジェクト名を付けて保持  
-2. **Import**: コードを GitHub 等へ置き、Vercel → Add Project → Import（継続デプロイ向き）  
-3. **CLI**: 手元で `npx vercel login` 後 `npx vercel --prod --yes`、または CI に `VERCEL_TOKEN` を入れる  
-
-詳細の要約はストア側 `docs/hosting-status.md` も参照。
+継続デプロイを足す場合は GitHub Import、または手元 `npx vercel login` → `npx vercel --prod --yes` / CI に `VERCEL_TOKEN`。
