@@ -128,11 +128,19 @@ function initEmailForm() {
         throw new Error(result.message || '送信に失敗しました')
       }
 
-      setFormStatus(
-        status,
-        '受け付けました。自動返信メールをご確認ください（届かない場合は迷惑メールフォルダもご確認ください）。',
-        'success',
-      )
+      if (result && result.holding) {
+        setFormStatus(
+          status,
+          '受け付けました。紹介リンクの準備ができ次第、メールでご案内します（迷惑メールフォルダもご確認ください）。',
+          'success',
+        )
+      } else {
+        setFormStatus(
+          status,
+          '受け付けました。自動返信メールをご確認ください（届かない場合は迷惑メールフォルダもご確認ください）。',
+          'success',
+        )
+      }
       form.reset()
     } catch (error) {
       if (error && error.code === 'CONFIG') {

@@ -18,24 +18,10 @@ npm run build
 npm run preview
 ```
 
-## Vercel で公開（短縮）
-
-1. このリポジトリを GitHub 等に用意する  
-2. [Vercel](https://vercel.com/) で Import（`vercel.json` により Build=`npm run build` / Output=`dist`）  
-3. Deploy → `https://<project>.vercel.app`  
-4. カード到着後に `src/config.js` の `LINE_FRIEND_URL` / `GAS_WEBAPP_URL` を本番値へ（未設定時は CTA が「準備中」）  
-
-CLI:
-
-```bash
-npx vercel --prod
-```
-
-### 本番
+## 本番
 
 - URL: https://marriott-bonvoy-lp.vercel.app  
 - Project: `marriott-bonvoy-lp` ／ Team: yamasinn0224-2421's projects  
-- 旧 `temporary-brisk-quasar-8hm5j25.vercel.app` は 404（リダイレクトなし）  
 
 詳細: [docs/hosting.md](./docs/hosting.md)
 
@@ -47,34 +33,34 @@ npx vercel --prod
 | フロント定数（LINE / GAS） | `src/config.js` |
 | メール自動返信（GASコピペ） | `gas_server.js` |
 | Vercel 設定 | `vercel.json` |
-| 公開手順 | `docs/hosting.md` |
 | GAS手順 | `docs/gas-setup.md` |
 | LINE手順・文面 | `docs/line-setup.md` / `templates/` |
 | 運用要約 | `docs/ops-checklist.md` |
 
-## 差し込み定数
+## 差し込み定数（1箇所まとめ）
 
-### フロント `src/config.js`
+### 今やる → `src/config.js`
 
-| 定数 | 用途 |
+| 定数 | どこから取る |
 | --- | --- |
-| `LINE_FRIEND_URL` | LINE友だち追加 CTA |
-| `GAS_WEBAPP_URL` | メールフォーム送信先 |
+| `LINE_FRIEND_URL` | LINE Manager の友だち追加URL |
+| `GAS_WEBAPP_URL` | Apps Script ウェブアプリURL（末尾 `/exec`） |
 
-紹介URL本体は **GAS / LINE 側のみ**（ページ非掲載）。
+空のとき CTA は「準備中」。値が入ると有効化。
 
-### GAS `gas_server.js` の `CONFIG`
+### 後で差し込む（カード到着後）
 
-| 定数 | 用途 |
+| 値 | 場所 |
 | --- | --- |
-| `REFERRAL_URL` | 自動返信メール本文の紹介リンク（必須） |
+| 紹介URL | `gas_server.js` → `CONFIG.REFERRAL_URL`（新バージョン再デプロイ） |
+| 紹介URL（同じ） | LINEあいさつ／キーワードの `【ここに紹介URLを貼る】` |
 
-## 立ち上げの流れ
+## 立ち上げの流れ（推奨順）
 
-1. 紹介URLを取得（ページ非掲載）  
-2. [docs/gas-setup.md](./docs/gas-setup.md) → `GAS_WEBAPP_URL`  
-3. [docs/line-setup.md](./docs/line-setup.md) → `LINE_FRIEND_URL`  
-4. [docs/hosting.md](./docs/hosting.md) で **Vercel** 公開  
-5. メール／LINE／ソース直貼りなしをスモークテスト  
+1. **今** [docs/line-setup.md](./docs/line-setup.md) → `LINE_FRIEND_URL`  
+2. **今** [docs/gas-setup.md](./docs/gas-setup.md) → `GAS_WEBAPP_URL`  
+3. push / Vercel 再デプロイで CTA 有効化  
+4. **後** 紹介URLを GAS と LINE にだけ差し込む  
+5. スモークテスト（メール実リンク・LINEあいさつ・ソースに紹介URLなし）  
 
 チェックリスト: Project ストア `docs/launch-checklist.md`

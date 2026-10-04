@@ -3,10 +3,14 @@
  * ------------------------------------------------------------
  * ファイル名の目安: Code.gs
  *
+ * ## 今やること / 後で差し込むこと
+ * - 今: このファイルを貼る → ウェブアプリとしてデプロイ → URL を LP の GAS_WEBAPP_URL へ
+ * - 後: CONFIG.REFERRAL_URL だけ実URLに差し替え → 新バージョンで再デプロイ
+ *
  * ## デプロイ手順（要約）
  * 1. https://script.google.com → 新しいプロジェクト
  * 2. このファイル全文を貼り付けて保存
- * 3. 下の CONFIG を実値に差し替え（特に REFERRAL_URL）
+ * 3. REFERRAL_URL はカード到着前は PLACEHOLDER のままでよい（準備中メールを送る）
  * 4. デプロイ → 新しいデプロイ → 種類: ウェブアプリ
  *    - 説明: marriott-amex-lp-mail など
  *    - 次のユーザーとして実行: 自分
@@ -23,18 +27,21 @@
  *
  * ## 注意
  * - 紹介URLは Web ページに直貼りしない（このメール本文にだけ入れる）
- * - REFERRAL_URL が PLACEHOLDER のままだとメールは送らずエラーを返す
+ * - PLACEHOLDER の文字列をメール本文に載せない（準備中メールに切替）
  */
 
 var CONFIG = {
-  /** 自動返信に差し込む紹介URL（ページ非掲載） */
+  /** 自動返信に差し込む紹介URL（ページ非掲載）。カード到着後に実URLへ */
   REFERRAL_URL: 'https://americanexpress.com/PLACEHOLDER_REFERRAL_URL',
 
   /** 送信者表示名 */
   FROM_NAME: 'Marriott Bonvoyアメックス比較ガイド',
 
-  /** 件名 */
+  /** 件名（紹介URL差し込み後） */
   MAIL_SUBJECT: '【Marriott Bonvoyアメックス】紹介リンクのご案内',
+
+  /** 件名（紹介URLがまだのとき） */
+  HOLDING_SUBJECT: '【Marriott Bonvoyアメックス】受け付けました（リンク準備中）',
 
   /**
    * 返信先（任意）。空なら送信アカウントの既定。
@@ -48,20 +55,26 @@ var CONFIG = {
   /** 同一メールの連投抑制（秒） */
   RATE_LIMIT_SECONDS: 60,
 
-  /** true のとき、PLACEHOLDER のまま送信しようとしても拒否する */
+  /**
+   * true: PLACEHOLDER のまま実リンクメールを送らない。
+   * 代わりに準備中メールを送り、申し込みを受け付ける（今のセットアップ向け）。
+   */
   BLOCK_PLACEHOLDER_REFERRAL: true,
 }
 
 /**
  * 疎通確認用 GET
  * ブラウザで Web アプリ URL を開くと JSON が返る
+ * ready: true = 紹介URL差し込み済み / false = まだ PLACEHOLDER（準備中メール）
  */
 function doGet() {
   return jsonResponse_({
     ok: true,
     service: 'marriott-amex-lp-mail',
     ready: !isPlaceholderReferral_(),
-    message: 'POST JSON { "email": "you@example.com" } to receive a referral link email.',
+    message: isPlaceholderReferral_()
+      ? 'REFERRAL_URL is still a placeholder. POSTs are accepted; holding email is sent until you set the real URL.'
+      : 'POST JSON { "email": "you@example.com" } to receive a referral link email.',
   })
 }
 
@@ -80,12 +93,6 @@ function doPost(e) {
     if (!isValidEmail_(email)) {
       return jsonResponse_({ ok: false, message: 'invalid email' })
     }
-    if (CONFIG.BLOCK_PLACEHOLDER_REFERRAL && isPlaceholderReferral_()) {
-      return jsonResponse_({
-        ok: false,
-        message: 'REFERRAL_URL is still a placeholder. Set CONFIG.REFERRAL_URL before going live.',
-      })
-    }
 
     if (isRateLimited_(email)) {
       return jsonResponse_({
@@ -95,17 +102,29 @@ function doPost(e) {
       })
     }
 
+    var holding = CONFIG.BLOCK_PLACEHOLDER_REFERRAL && isPlaceholderReferral_()
+
     // 同時送信の取りこぼしを減らす
     var lock = LockService.getScriptLock()
     lock.waitLock(10000)
     try {
-      sendReferralMail_(email)
-      appendLog_(email, payload)
+      if (holding) {
+        sendHoldingMail_(email)
+      } else {
+        sendReferralMail_(email)
+      }
+      appendLog_(email, payload, holding ? 'holding' : 'referral')
     } finally {
       lock.releaseLock()
     }
 
-    return jsonResponse_({ ok: true })
+    return jsonResponse_({
+      ok: true,
+      holding: holding,
+      message: holding
+        ? 'accepted; holding email sent (set REFERRAL_URL then redeploy)'
+        : 'accepted; referral email sent',
+    })
   } catch (error) {
     return jsonResponse_({
       ok: false,
@@ -164,6 +183,25 @@ function buildMailBody_(email) {
     '',
     '年会費・無料宿泊・エリートなどの条件も、申込前に公式サイトでご確認を。',
     '',
+    '比較ガイド: https://marriott-bonvoy-lp.vercel.app',
+    '',
+    '—',
+    CONFIG.FROM_NAME,
+  ].join('\n')
+}
+
+function buildHoldingMailBody_(email) {
+  return [
+    email + ' 様',
+    '',
+    '受け付けました。ありがとうございます。',
+    '',
+    '紹介リンクの準備ができ次第、このメールアドレスへ改めてご案内します。',
+    '（アメックスの紹介規約に沿い、Webには載せず個別にお送りします）',
+    '',
+    '先に券種の比較だけ見たい場合は、こちらをどうぞ。',
+    'https://marriott-bonvoy-lp.vercel.app',
+    '',
     '—',
     CONFIG.FROM_NAME,
   ].join('\n')
@@ -182,7 +220,20 @@ function sendReferralMail_(email) {
   MailApp.sendEmail(options)
 }
 
-function appendLog_(email, payload) {
+function sendHoldingMail_(email) {
+  var options = {
+    to: email,
+    subject: CONFIG.HOLDING_SUBJECT,
+    body: buildHoldingMailBody_(email),
+    name: CONFIG.FROM_NAME,
+  }
+  if (CONFIG.REPLY_TO) {
+    options.replyTo = CONFIG.REPLY_TO
+  }
+  MailApp.sendEmail(options)
+}
+
+function appendLog_(email, payload, kind) {
   if (!CONFIG.LOG_SHEET_ID) return
 
   var ss = SpreadsheetApp.openById(CONFIG.LOG_SHEET_ID)
@@ -192,6 +243,7 @@ function appendLog_(email, payload) {
     email,
     payload && payload.source ? String(payload.source) : '',
     payload && payload.timestamp ? String(payload.timestamp) : '',
+    kind || '',
   ])
 }
 
