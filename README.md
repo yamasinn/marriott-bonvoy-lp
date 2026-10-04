@@ -31,11 +31,11 @@ CLI:
 npx vercel --prod
 ```
 
-### 本番（Claim済み・恒久）
+### 本番
 
-- URL: https://temporary-brisk-quasar-8hm5j25.vercel.app  
-- Project: `temporary-brisk-quasar-8hm5j25` ／ Team: yamasinn0224-2421's projects  
-- 任意: Vercel Project Settings で `marriott-bonvoy-lp` 等へリネーム  
+- URL: https://marriott-bonvoy-lp.vercel.app  
+- Project: `marriott-bonvoy-lp` ／ Team: yamasinn0224-2421's projects  
+- 旧 `temporary-brisk-quasar-8hm5j25.vercel.app` は 404（リダイレクトなし）  
 
 詳細: [docs/hosting.md](./docs/hosting.md)
 
