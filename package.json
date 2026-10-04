@@ -1,0 +1,15 @@
+{
+  "name": "marriott-amex-referral-lp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Marriott Bonvoyアメックス紹介用の静的LP（LINE / メール個別案内）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}
