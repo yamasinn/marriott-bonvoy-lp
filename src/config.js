@@ -8,9 +8,9 @@
  * - 紹介URL本体は gas_server.js / LINEあいさつ側（ここには実URLを書かない）
  */
 export const CONFIG = {
-  /** LINE 友だち追加 URL（CTAボタン）。例: https://lin.ee/xxxx */
-  LINE_FRIEND_URL: 'https://line.me/R/ti/p/%40PLACEHOLDER_LINE_ID',
+  /** LINE 友だち追加 URL（CTAボタン）。例: https://lin.ee/xxxx — 未設定は空文字 */
+  LINE_FRIEND_URL: '',
 
-  /** GAS Webアプリ URL（メールフォーム送信先）。末尾 /exec */
-  GAS_WEBAPP_URL: 'https://script.google.com/macros/s/PLACEHOLDER_GAS_DEPLOYMENT_ID/exec',
+  /** GAS Webアプリ URL（メールフォーム送信先）。末尾 /exec — 未設定は空文字 */
+  GAS_WEBAPP_URL: '',
 }

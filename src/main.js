@@ -10,7 +10,8 @@ const QUIZ_COPY = {
 }
 
 function isPlaceholder(value) {
-  return !value || String(value).includes('PLACEHOLDER')
+  const v = String(value || '').trim()
+  return !v || v.includes('PLACEHOLDER')
 }
 
 function initLineCta() {
