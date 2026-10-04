@@ -65,16 +65,16 @@ npx vercel --prod --yes --token "$VERCEL_TOKEN"
 - [ ] LINE CTA が友だち追加 URL を開く  
 - [ ] `https://….vercel.app` がスマホで表示される  
 
-## 本番デプロイ状況（Claim済み・2026-10-04）
+## 本番デプロイ状況（2026-10-04）
 
 | 項目 | 状態 |
 | --- | --- |
-| 本番URL（恒久） | https://temporary-brisk-quasar-8hm5j25.vercel.app |
-| Project | `temporary-brisk-quasar-8hm5j25` |
+| 本番URL | https://marriott-bonvoy-lp.vercel.app |
+| Project | `marriott-bonvoy-lp` |
 | Team | yamasinn0224-2421's projects |
 | 改行修正・CTA準備中表示 | デプロイ済み |
-| Claim | **完了** |
+| Claim / リネーム | **完了** |
 
-任意: Project Settings でプロジェクト名を `marriott-bonvoy-lp` 等へリネーム。
+旧URL `https://temporary-brisk-quasar-8hm5j25.vercel.app` は 404（リダイレクトなし）。
 
 継続デプロイを足す場合は GitHub Import、または手元 `npx vercel login` → `npx vercel --prod --yes` / CI に `VERCEL_TOKEN`。
