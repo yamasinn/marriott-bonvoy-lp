@@ -1,0 +1,12 @@
+# Cloudflare Pages 用の目安設定
+# ダッシュボード連携、または:
+#   npx wrangler pages deploy dist --project-name=marriott-amex-lp
+#
+# 要: CLOUDFLARE_API_TOKEN / アカウント権限
+
+name = "marriott-amex-lp"
+compatibility_date = "2026-10-04"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
