@@ -43,7 +43,8 @@ body {
 
 @media (max-width: 639px) {
   .hero-title {
-    font-size: clamp(1.65rem, 7.2vw, 2.35rem);
+    /* Tailwind の text-[2.35rem] より優先して幅に収める */
+    font-size: clamp(1.55rem, 6.8vw, 2.2rem) !important;
   }
 }
 
