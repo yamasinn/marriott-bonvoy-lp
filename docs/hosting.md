@@ -1,6 +1,8 @@
-# ホスティング公開手順
+# ホスティング公開手順（Vercel）
 
-静的ビルド（`npm run build` → `dist/`）を GitHub Pages または Cloudflare Pages に出す。
+参照実装: [kurokan-lp](https://kurokan-lp.vercel.app/)（同じく Vercel 上の静的LP）
+
+静的ビルド（`npm run build` → `dist/`）を **Vercel** に出す。SPA フォールバックは使わない（単一の `index.html` 静的配信）。
 
 ## ビルド
 
@@ -11,59 +13,59 @@ npm run build
 
 成果物は `dist/`。紹介URLはここに含まれない（`src/config.js` の LINE / GAS のみ）。
 
-## オプション A: GitHub Pages（推奨・無料）
-
-リポジトリが GitHub 上にある場合。
-
-1. GitHub にリポジトリを用意し、このコードを push  
-2. リポジトリ **Settings → Pages**  
-   - Source: **GitHub Actions**  
-3. このリポジトリの `.github/workflows/deploy-pages.yml` が `main`（または指定ブランチ）への push でビルド・公開する  
-4. 公開 URL 例: `https://<user>.github.io/<repo>/`  
-5. カスタムドメインがあれば Pages 設定で追加  
-
-### base パス
-
-リポジトリ名サブパスで公開する場合、`vite.config.js` に次を足す。
-
-```js
-export default defineConfig({
-  base: '/<repo-name>/',
-  // ...
-})
-```
-
-ルートドメイン／ユーザー Pages（`<user>.github.io`）なら `base: '/'` のままでよい。
-
-## オプション B: Cloudflare Pages
-
-1. [Cloudflare Dashboard](https://dash.cloudflare.com/) → Workers & Pages → Create → Pages  
-2. Git 連携、または直接アップロード  
-3. ビルド設定例  
+`vercel.json` で次を固定している。
 
 | 項目 | 値 |
 | --- | --- |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Node version | 22（または 20） |
+| Framework | vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
 
-CLI で出す場合（トークンが必要）:
+## Vercel に載せる（ダッシュボード）
+
+1. コードを GitHub 等の Git リポジトリに置く（Origin 一時リポジトリのままだと Vercel 連携しづらい）  
+2. [vercel.com](https://vercel.com/) にログイン → **Add New… → Project**  
+3. リポジトリを Import  
+4. 設定が `vercel.json` どおりか確認（Framework Preset: Vite、Output: `dist`）  
+5. **Deploy**  
+6. 発行 URL 例: `https://<project-name>.vercel.app`  
+7. （任意）カスタムドメインを Project → Settings → Domains で追加  
+
+kurokan に寄せるなら、プロジェクト名を分かりやすく（例: `marriott-amex-lp`）にしておく。
+
+## Vercel に載せる（CLI）
+
+要: [Vercel トークン](https://vercel.com/account/tokens) と、紐づけるチーム／アカウント権限。
 
 ```bash
-npx wrangler pages deploy dist --project-name=marriott-amex-lp
+npm install
+npm run build
+npx vercel login          # 対話、または VERCEL_TOKEN
+npx vercel link           # プロジェクト紐づけ
+npx vercel --prod         # 本番デプロイ
 ```
 
-`wrangler.toml` にプロジェクト名の目安を置いてある。
+非対話（CI / エージェント）:
+
+```bash
+export VERCEL_TOKEN=xxxx   # 要: Deployments 権限のあるトークン
+npx vercel --prod --yes --token "$VERCEL_TOKEN"
+```
+
+必要権限の目安:
+
+- トークン: **Create Deployments**（プロジェクト作成まで行うならそれも含む）
+- 対象チーム／個人アカウントへのデプロイ権限
 
 ## 公開前チェック
 
 - [ ] `src/config.js` の `LINE_FRIEND_URL` / `GAS_WEBAPP_URL` が本番値  
-- [ ] ページソースに紹介URL（americanexpress の紹介クエリ等）が**出ていない**  
+- [ ] ページソースに紹介URLが**出ていない**  
 - [ ] メールフォームが本番 GAS に届く  
 - [ ] LINE CTA が友だち追加 URL を開く  
+- [ ] `https://….vercel.app` がスマホで表示される  
 
 ## このクラウド環境での実デプロイ状況
 
-- リモートは Origin の一時リポジトリで、GitHub / Cloudflare の認証トークンが無い  
-- そのため **この環境からは本番公開 URL の発行まで到達できない**  
-- 設定ファイル（ワークフロー / wrangler）と手順は完備済み。ユーザー側で GitHub または Cloudflare に接続すれば公開できる  
+- `VERCEL_TOKEN` が無いため、ここからは本番 URL を発行できない  
+- `vercel.json` と手順は完備済み。手元または CI で `vercel --prod` / ダッシュボード Import すれば公開できる  

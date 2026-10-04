@@ -2,6 +2,8 @@
 
 アメックス紹介規約を守りつつ、Marriott Bonvoyアメックス（プレミアム／一般）の比較ガイドと、LINE／メールでの個別案内導線を提供する静的ランディングページです。**紹介URLはこのサイト上には掲載しません。**
 
+ホスト方針: **Vercel**（[kurokan-lp](https://kurokan-lp.vercel.app/) と同じ系統）。
+
 ## ローカル起動
 
 ```bash
@@ -16,6 +18,21 @@ npm run build
 npm run preview
 ```
 
+## Vercel で公開（短縮）
+
+1. このリポジトリを GitHub 等に用意する  
+2. [Vercel](https://vercel.com/) で Import（`vercel.json` により Build=`npm run build` / Output=`dist`）  
+3. Deploy → `https://<project>.vercel.app`  
+4. 事前に `src/config.js` の `LINE_FRIEND_URL` / `GAS_WEBAPP_URL` を本番値へ  
+
+CLI:
+
+```bash
+npx vercel --prod
+```
+
+詳細: [docs/hosting.md](./docs/hosting.md)
+
 ## 技術構成
 
 | 役割 | パス |
@@ -23,12 +40,11 @@ npm run preview
 | LP | `index.html` / `src/*` |
 | フロント定数（LINE / GAS） | `src/config.js` |
 | メール自動返信（GASコピペ） | `gas_server.js` |
+| Vercel 設定 | `vercel.json` |
+| 公開手順 | `docs/hosting.md` |
 | GAS手順 | `docs/gas-setup.md` |
 | LINE手順・文面 | `docs/line-setup.md` / `templates/` |
-| ホスティング | `docs/hosting.md` |
 | 運用要約 | `docs/ops-checklist.md` |
-| GitHub Pages CI | `.github/workflows/deploy-pages.yml` |
-| Cloudflare Pages 目安 | `wrangler.toml` |
 
 ## 差し込み定数
 
@@ -39,25 +55,20 @@ npm run preview
 | `LINE_FRIEND_URL` | LINE友だち追加 CTA |
 | `GAS_WEBAPP_URL` | メールフォーム送信先 |
 
-`REFERRAL_URL` コメントはメモ用。**フロントからは送らない・表示しない。** 実体は GAS / LINE 側。
+紹介URL本体は **GAS / LINE 側のみ**（ページ非掲載）。
 
 ### GAS `gas_server.js` の `CONFIG`
 
 | 定数 | 用途 |
 | --- | --- |
 | `REFERRAL_URL` | 自動返信メール本文の紹介リンク（必須） |
-| `REPLY_TO` / `LOG_SHEET_ID` | 任意 |
 
-## 立ち上げの流れ（短縮）
+## 立ち上げの流れ
 
 1. 紹介URLを取得（ページ非掲載）  
-2. [docs/gas-setup.md](./docs/gas-setup.md) で GAS をデプロイ → `GAS_WEBAPP_URL` を設定  
-3. [docs/line-setup.md](./docs/line-setup.md) であいさつに紹介URL → `LINE_FRIEND_URL` を設定  
-4. [docs/hosting.md](./docs/hosting.md) で GitHub Pages または Cloudflare Pages に公開  
+2. [docs/gas-setup.md](./docs/gas-setup.md) → `GAS_WEBAPP_URL`  
+3. [docs/line-setup.md](./docs/line-setup.md) → `LINE_FRIEND_URL`  
+4. [docs/hosting.md](./docs/hosting.md) で **Vercel** 公開  
 5. メール／LINE／ソース直貼りなしをスモークテスト  
 
-詳細チェックリストは Project ストアの `docs/launch-checklist.md` を参照。
-
-## CORS（メール）
-
-フロントは `Content-Type: text/plain;charset=utf-8` で JSON を POST。詳細は `docs/gas-setup.md`。
+チェックリスト: Project ストア `docs/launch-checklist.md`
