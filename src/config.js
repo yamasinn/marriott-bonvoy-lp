@@ -18,5 +18,5 @@ export const CONFIG = {
   LINE_FRIEND_URL: 'https://lin.ee/UFaAhyT',
 
   /** GAS Webアプリ URL（メールフォーム送信先）。末尾 /exec */
-  GAS_WEBAPP_URL: '',
+  GAS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbw5VUJDtX4cZ6W9JU-GGMPwwjK7SKQXtyAJvAO4R4OkzqffBq_7VucDM0v0gP6pX7qK/exec',
 }
