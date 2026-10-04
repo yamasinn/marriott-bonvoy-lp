@@ -15,7 +15,7 @@
  */
 export const CONFIG = {
   /** LINE 友だち追加 URL（CTAボタン）。例: https://lin.ee/xxxx */
-  LINE_FRIEND_URL: '',
+  LINE_FRIEND_URL: 'https://lin.ee/UFaAhyT',
 
   /** GAS Webアプリ URL（メールフォーム送信先）。末尾 /exec */
   GAS_WEBAPP_URL: '',
