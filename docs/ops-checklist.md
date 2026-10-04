@@ -13,4 +13,4 @@
 
 紹介URLは **LP・SNS・README に直貼りしない**。
 
-詳細手順: `docs/gas-setup.md` / `docs/line-setup.md` / `docs/hosting.md`
+詳細手順: `docs/gas-setup.md` / `docs/line-setup.md` / `docs/hosting.md`（**Vercel** 本線）
