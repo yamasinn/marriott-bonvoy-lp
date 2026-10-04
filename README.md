@@ -56,4 +56,7 @@ GAS: `gas_server.js` 先頭の `CONFIG`
 2. カードの魅力（3点）
 3. プレミアム／一般の比較表＋決済額の簡易分岐
 4. ケース別（向き不向き）
-5. CTA（LINE友だち追加 / メールフォーム）
+5. FAQ（損益分岐・券種差・紹介リンクの受け取り方）＋ `FAQPage` JSON-LD
+6. CTA（LINE友だち追加 / メールフォーム）
+
+GEO 向けに、比較表・箇条書き・`section` / `article` / `table` などのセマンティックHTMLと FAQ を入れています。
