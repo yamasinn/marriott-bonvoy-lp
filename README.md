@@ -48,12 +48,15 @@ npm run preview
 
 空のとき CTA は「準備中」。値が入ると有効化。
 
-### 後で差し込む（カード到着後）
+### 後で差し込む（カード到着後・券種ごと）
 
 | 値 | 場所 |
 | --- | --- |
-| 紹介URL | `gas_server.js` → `CONFIG.REFERRAL_URL`（新バージョン再デプロイ） |
-| 紹介URL（同じ） | LINEあいさつ／キーワードの `【ここに紹介URLを貼る】` |
+| 一般の紹介URL | `gas_server.js` → `CONFIG.REFERRAL_URL_REGULAR`（新バージョン再デプロイ） |
+| プレミアムの紹介URL | `gas_server.js` → `CONFIG.REFERRAL_URL_PREMIUM`（新バージョン再デプロイ） |
+| 同上2本 | LINEあいさつ／キーワードの一般用・プレミアム用プレースホルダ |
+
+実URLはリポジトリにコミットせず、Apps Script／LINE Manager 上でのみ差し替えます。
 
 ## 立ち上げの流れ（推奨順）
 

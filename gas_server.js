@@ -5,12 +5,13 @@
  *
  * ## 今やること / 後で差し込むこと
  * - 今: このファイルを貼る → ウェブアプリとしてデプロイ → URL を LP の GAS_WEBAPP_URL へ
- * - 後: CONFIG.REFERRAL_URL だけ実URLに差し替え → 新バージョンで再デプロイ
+ * - 後: CONFIG.REFERRAL_URL_REGULAR と CONFIG.REFERRAL_URL_PREMIUM を実URLに差し替え
+ *       → 新バージョンで再デプロイ
  *
  * ## デプロイ手順（要約）
  * 1. https://script.google.com → 新しいプロジェクト
  * 2. このファイル全文を貼り付けて保存
- * 3. REFERRAL_URL はカード到着前は PLACEHOLDER のままでよい（準備中メールを送る）
+ * 3. 紹介URLはカード到着前は PLACEHOLDER のままでよい（準備中メールを送る）
  * 4. デプロイ → 新しいデプロイ → 種類: ウェブアプリ
  *    - 説明: marriott-amex-lp-mail など
  *    - 次のユーザーとして実行: 自分
@@ -26,13 +27,17 @@
  * - OPTIONS は GAS では扱えないため text/plain 運用で回避
  *
  * ## 注意
- * - 紹介URLは Web ページに直貼りしない（このメール本文にだけ入れる）
+ * - 紹介URLは券種ごと（一般／プレミアム）。Web ページに直貼りしない（このメール本文にだけ入れる）
  * - PLACEHOLDER の文字列をメール本文に載せない（準備中メールに切替）
+ * - 実URLはリポジトリにコミットしない
  */
 
 var CONFIG = {
-  /** 自動返信に差し込む紹介URL（ページ非掲載）。カード到着後に実URLへ */
-  REFERRAL_URL: 'https://americanexpress.com/PLACEHOLDER_REFERRAL_URL',
+  /** 一般（レギュラー）用の紹介URL（ページ非掲載）。カード到着後に実URLへ */
+  REFERRAL_URL_REGULAR: 'https://americanexpress.com/PLACEHOLDER_REFERRAL_URL_REGULAR',
+
+  /** プレミアム用の紹介URL（ページ非掲載）。カード到着後に実URLへ */
+  REFERRAL_URL_PREMIUM: 'https://americanexpress.com/PLACEHOLDER_REFERRAL_URL_PREMIUM',
 
   /** 送信者表示名 */
   FROM_NAME: 'Marriott Bonvoyアメックス比較ガイド',
@@ -65,7 +70,7 @@ var CONFIG = {
 /**
  * 疎通確認用 GET
  * ブラウザで Web アプリ URL を開くと JSON が返る
- * ready: true = 紹介URL差し込み済み / false = まだ PLACEHOLDER（準備中メール）
+ * ready: true = 一般・プレミアム両方の紹介URL差し込み済み / false = まだ PLACEHOLDER（準備中メール）
  */
 function doGet() {
   return jsonResponse_({
@@ -73,8 +78,8 @@ function doGet() {
     service: 'marriott-amex-lp-mail',
     ready: !isPlaceholderReferral_(),
     message: isPlaceholderReferral_()
-      ? 'REFERRAL_URL is still a placeholder. POSTs are accepted; holding email is sent until you set the real URL.'
-      : 'POST JSON { "email": "you@example.com" } to receive a referral link email.',
+      ? 'Referral URLs are still placeholders. POSTs are accepted; holding email is sent until you set both real URLs.'
+      : 'POST JSON { "email": "you@example.com" } to receive a referral link email (regular + premium).',
   })
 }
 
@@ -122,7 +127,7 @@ function doPost(e) {
       ok: true,
       holding: holding,
       message: holding
-        ? 'accepted; holding email sent (set REFERRAL_URL then redeploy)'
+        ? 'accepted; holding email sent (set REFERRAL_URL_REGULAR and REFERRAL_URL_PREMIUM then redeploy)'
         : 'accepted; referral email sent',
     })
   } catch (error) {
@@ -160,9 +165,14 @@ function isValidEmail_(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+/** 一般・プレミアムのどちらか一方でも PLACEHOLDER／空なら true */
 function isPlaceholderReferral_() {
-  var url = String(CONFIG.REFERRAL_URL || '')
-  return !url || url.indexOf('PLACEHOLDER') !== -1
+  return isPlaceholderUrl_(CONFIG.REFERRAL_URL_REGULAR) || isPlaceholderUrl_(CONFIG.REFERRAL_URL_PREMIUM)
+}
+
+function isPlaceholderUrl_(url) {
+  var value = String(url || '')
+  return !value || value.indexOf('PLACEHOLDER') !== -1
 }
 
 function buildMailBody_(email) {
@@ -172,14 +182,16 @@ function buildMailBody_(email) {
     'Marriott Bonvoyアメックスの紹介リンクです。',
     'アメックスの紹介規約に沿って、個別にお送りしています。',
     '',
-    '▼紹介リンク（あなた専用の入り口）',
-    CONFIG.REFERRAL_URL,
+    '紹介URLは券種ごとに分かれています。ご希望のカードのリンクからお申し込みください。',
     '',
-    'このリンクから申し込むと、紹介経由の新規入会特典の対象になります。',
+    '▼一般（レギュラー）の紹介リンク',
+    CONFIG.REFERRAL_URL_REGULAR,
+    '',
+    '▼プレミアムの紹介リンク',
+    CONFIG.REFERRAL_URL_PREMIUM,
+    '',
+    'いずれかのリンクから申し込むと、紹介経由の新規入会特典の対象になります。',
     'ポイント数や条件は時期とカードで変わるので、申込画面と公式で確認してください。',
-    '',
-    '同じリンクから、プレミアムでも一般でも選べます。',
-    '券種は申込画面で、用途に合わせて選んでください。',
     '',
     '年会費・無料宿泊・エリートなどの条件も、申込前に公式サイトでご確認を。',
     '',
@@ -197,7 +209,7 @@ function buildHoldingMailBody_(email) {
     '受け付けました。ありがとうございます。',
     '',
     '紹介リンクの準備ができ次第、このメールアドレスへ改めてご案内します。',
-    '（アメックスの紹介規約に沿い、Webには載せず個別にお送りします）',
+    '（一般用とプレミアム用の両方をお送りします。Webには載せず個別にお送りします）',
     '',
     '先に券種の比較だけ見たい場合は、こちらをどうぞ。',
     'https://marriott-bonvoy-lp.vercel.app',

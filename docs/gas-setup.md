@@ -7,9 +7,11 @@ LP の「メールで受け取る」フォームから届いたアドレスへ�
 | いつ | 作業 |
 | --- | --- |
 | **今** | Apps Script 作成 → `gas_server.js` 貼付 → ウェブアプリ公開 → `GAS_WEBAPP_URL` を LP に貼る |
-| **後** | `CONFIG.REFERRAL_URL` だけ実URLに差し替え → **新バージョン**で再デプロイ |
+| **後** | `CONFIG.REFERRAL_URL_REGULAR` と `CONFIG.REFERRAL_URL_PREMIUM` を実URLに差し替え → **新バージョン**で再デプロイ |
 
-カード到着前でもデプロイしてよい。`REFERRAL_URL` が PLACEHOLDER の間は「準備中」受付メールを送る（PLACEHOLDER 文字列はメールに載せない）。
+カード到着前でもデプロイしてよい。どちらか一方でも PLACEHOLDER の間は「準備中」受付メールを送る（PLACEHOLDER 文字列はメールに載せない）。
+
+紹介URLは **券種ごと**（一般／プレミアム）。メール本文には両方を載せ、受け手が希望券種を選ぶ形です。
 
 ---
 
@@ -26,7 +28,7 @@ LP の「メールで受け取る」フォームから届いたアドレスへ�
 
 疎通: ブラウザでその URL を開く → `{"ok":true,...}`  
 - `ready: false` … 紹介URLまだ（想定どおり。準備中メール）  
-- `ready: true` … 紹介URL差し込み済み
+- `ready: true` … 一般・プレミアム両方の紹介URL差し込み済み
 
 ---
 
@@ -34,12 +36,15 @@ LP の「メールで受け取る」フォームから届いたアドレスへ�
 
 | キー | いつ | 内容 |
 | --- | --- | --- |
-| `REFERRAL_URL` | **後** | 紹介専用URL。PLACEHOLDER のままデプロイ可 |
+| `REFERRAL_URL_REGULAR` | **後** | 一般用の紹介専用URL。PLACEHOLDER のままデプロイ可 |
+| `REFERRAL_URL_PREMIUM` | **後** | プレミアム用の紹介専用URL。PLACEHOLDER のままデプロイ可 |
 | `FROM_NAME` / `MAIL_SUBJECT` / `HOLDING_SUBJECT` | 任意 | 表示名・件名 |
 | `REPLY_TO` | 任意 | 返信先 |
 | `LOG_SHEET_ID` | 任意 | 受信ログ用シート ID |
 | `RATE_LIMIT_SECONDS` | 任意 | 同一アドレス連投抑制（秒） |
 | `BLOCK_PLACEHOLDER_REFERRAL` | 推奨 `true` | PLACEHOLDER を本文に載せない（準備中メールへ） |
+
+実URLはリポジトリにコミットしない（Apps Script 上でのみ差し替え）。
 
 ---
 
@@ -69,10 +74,10 @@ LP（`src/main.js`）は次の形で POST する。
 
 ## カード到着後（紹介URL差し込み）
 
-1. Apps Script で `CONFIG.REFERRAL_URL` を実URLに変更して保存  
+1. Apps Script で `CONFIG.REFERRAL_URL_REGULAR` と `CONFIG.REFERRAL_URL_PREMIUM` を実URLに変更して保存  
 2. **デプロイ → デプロイを管理 → 編集 → バージョン: 新バージョン**  
 3. ブラウザで WebアプリURL → `ready: true`  
-4. LP フォームから自分宛に送り、実リンクメールが届くか確認  
+4. LP フォームから自分宛に送り、一般／プレミアム両方のリンクが入ったメールが届くか確認  
 
 ---
 
@@ -81,6 +86,6 @@ LP（`src/main.js`）は次の形で POST する。
 | 症状 | 確認 |
 | --- | --- |
 | LP が「準備中」 | `src/config.js` の `GAS_WEBAPP_URL` が空／PLACEHOLDER |
-| 準備中メールが来る | `REFERRAL_URL` 未差し込み（想定どおり） |
+| 準備中メールが来る | どちらかの紹介URLが未差し込み（想定どおり） |
 | メールが来ない | 迷惑メール、MailApp 日次上限、権限未承認、再デプロイ漏れ |
 | CORS エラーっぽい | Content-Type が text/plain か、デプロイの「全員」か |

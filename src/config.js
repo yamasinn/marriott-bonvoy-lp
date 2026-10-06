@@ -8,8 +8,9 @@
  * - GAS_WEBAPP_URL  … docs/gas-setup.md でデプロイした WebアプリURL（末尾 /exec）
  *
  * ## 後で差し込む（カード到着後）
- * - 紹介URL本体 → gas_server.js の CONFIG.REFERRAL_URL と LINE あいさつ文
- *   （このファイルには書かない）
+ * - 紹介URL本体（券種ごと）→ gas_server.js の
+ *   CONFIG.REFERRAL_URL_REGULAR / CONFIG.REFERRAL_URL_PREMIUM と LINE あいさつ文
+ *   （このファイルには書かない。実URLはリポジトリにコミットしない）
  *
  * 未設定（空文字 or PLACEHOLDER 含む）のとき、CTA は「準備中」表示。
  */
